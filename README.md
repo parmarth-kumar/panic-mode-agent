@@ -91,7 +91,7 @@ The Android app continues operating **without Droidrun** once configured, demons
 
 ## 🎥 Demo Video
 
-👉 *(Add YouTube link here)*
+👉 https://youtu.be/vhTvIm0TIGI
 
 Demo shows:
 
@@ -135,3 +135,4 @@ panic-mode-agent/
 │
 └── README.md
 ```
+
