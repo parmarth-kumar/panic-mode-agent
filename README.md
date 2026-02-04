@@ -1,5 +1,5 @@
 
-# 🛡️ Panic Mode — Hybrid Survival Agent for Android
+# 🛡️ Panic Mode — Hybrid Autonomous Survival Agent
 
 > **An autonomous, agent-driven personal safety system**
 > 
@@ -299,4 +299,5 @@ Used only for:
 - No dependency on a single signal
     
 - Graceful degradation over hard crashes
+
     
