@@ -1,26 +1,40 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.panicmode">
 
+    <!-- Telephony is optional: app degrades gracefully without SMS hardware -->
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <!-- SMS control for panic activation, escalation, and notifications -->
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.SEND_SMS"/>
+
+    <!-- Runtime notifications and foreground execution -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions"
-        xmlns:tools="http://schemas.android.com/tools"/>
+    <!-- Location access for live tracking and safety escalation -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <!-- Network + power stability -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- System tuning (brightness control during survival mode) -->
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions"/>
+
+    <!-- Exact alarms required for Dead Man’s Switch scheduling -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -30,6 +44,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Panicmode">
 
+        <!-- Main UI entry point -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -39,11 +54,19 @@
             </intent-filter>
         </activity>
 
+        <!-- Core panic lifecycle service -->
         <service
             android:name=".PanicService"
-            android:exported="false"
-            android:foregroundServiceType="location"/>
+            android:foregroundServiceType="location"
+            android:exported="false" />
 
+        <!-- Keeps DMS alarms alive under system pressure -->
+        <service
+            android:name=".DmsKeepAliveService"
+            android:foregroundServiceType="specialUse"
+            android:exported="false" />
+
+        <!-- Receives SMS commands from trusted contact only -->
         <receiver
             android:name=".SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS"
@@ -52,6 +75,29 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
             </intent-filter>
         </receiver>
+
+        <!-- DEAD MAN’S SWITCH RECEIVERS -->
+
+        <!-- User confirms safety from notification -->
+        <receiver
+            android:name=".DmsConfirmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.panicmode.DMS_CONFIRM_SAFETY" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Periodic safety check trigger -->
+        <receiver
+            android:name=".DmsCheckReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Escalation trigger on missed confirmation -->
+        <receiver
+            android:name=".DmsTimeoutReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
     </application>
 

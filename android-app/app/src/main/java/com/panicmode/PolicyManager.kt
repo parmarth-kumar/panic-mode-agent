@@ -1,17 +1,30 @@
 package com.panicmode
 
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.provider.Settings
 import android.util.Log
 import androidx.work.*
 import java.util.concurrent.TimeUnit
-import android.content.Intent
 
+/**
+ * Central decision engine for the Panic Agent.
+ *
+ * Converts user intent and runtime context (battery, suspension state)
+ * into a concrete execution policy, schedules heartbeats,
+ * and triggers immediate state updates.
+ */
 object PolicyManager {
 
-    fun applyPolicy(context: Context) {
+    fun applyPolicy(context: Context): AgentPolicy {
+
+        // Agent suspension short-circuits all policy logic
+        if (PanicPreferences.isSuspended(context)) {
+            return AgentPolicy("SUSPENDED", 0)
+        }
+
         Log.i("PanicMode", "🧠 AGENT BRAIN ACTIVE")
 
         val batteryPct = getBatteryLevel(context)
@@ -25,18 +38,23 @@ object PolicyManager {
             "📜 POLICY → Raw=$rawIntent | Mode=${policy.mode} | Interval=${policy.intervalMinutes}"
         )
 
-        reduceBrightness(context)
-
-        // 🔥 CRITICAL: Update foreground notification via service
-        (context as? PanicService)
-            ?.updateForegroundNotification(policy.mode, policy.intervalMinutes)
-
+        // NOTE: Brightness reduction is intentionally NOT done here.
+        // It runs once during service start to avoid repeated system writes.
         scheduleHeartbeat(context, policy)
         triggerImmediateUpdate(context)
+
+        AgentLog.log(
+            context,
+            AgentLog.Type.AGENT,
+            "Policy applied → ${policy.mode} (${policy.intervalMinutes}m)"
+        )
+
+        return policy
     }
 
-    // ---------- Intent Normalization ----------
+    // ---------- INTENT NORMALIZATION ----------
 
+    // Maps user-facing intent into internal strategy buckets
     private fun normalizeIntent(raw: String): String {
         return when (raw) {
             "TRAVELING", "SAVE_BATTERY" -> "SURVIVAL"
@@ -46,9 +64,11 @@ object PolicyManager {
         }
     }
 
-    // ---------- Policy Decision Engine ----------
+    // ---------- POLICY DECISION ENGINE ----------
 
+    // Determines heartbeat frequency based on intent + battery constraints
     private fun generatePolicy(mode: String, batteryPct: Int): AgentPolicy {
+
         if (batteryPct < 15) {
             return AgentPolicy("SURVIVAL (Critical Battery)", 60)
         }
@@ -66,8 +86,9 @@ object PolicyManager {
         }
     }
 
-    // ---------- Work Scheduling ----------
+    // ---------- WORK SCHEDULING ----------
 
+    // Schedules periodic heartbeat updates according to active policy
     private fun scheduleHeartbeat(context: Context, policy: AgentPolicy) {
         val work = PeriodicWorkRequestBuilder<LocationWorker>(
             policy.intervalMinutes,
@@ -83,6 +104,7 @@ object PolicyManager {
         )
     }
 
+    // Triggers an immediate one-time update on policy changes
     private fun triggerImmediateUpdate(context: Context) {
         val work = OneTimeWorkRequestBuilder<LocationWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
@@ -91,15 +113,16 @@ object PolicyManager {
         WorkManager.getInstance(context).enqueue(work)
     }
 
-    // ---------- System Controls ----------
+    // ---------- SYSTEM CONTROLS ----------
 
-    private fun reduceBrightness(context: Context) {
+    // Called once during panic activation to conserve power
+    fun reduceBrightness(context: Context) {
         if (Settings.System.canWrite(context)) {
             try {
                 Settings.System.putInt(
                     context.contentResolver,
                     Settings.System.SCREEN_BRIGHTNESS,
-                    0
+                    10
                 )
             } catch (e: Exception) {
                 Log.e("PanicMode", "Brightness control failed", e)
@@ -124,6 +147,9 @@ object PolicyManager {
     }
 }
 
+/**
+ * Immutable execution policy produced by the agent decision engine.
+ */
 data class AgentPolicy(
     val mode: String,
     val intervalMinutes: Long

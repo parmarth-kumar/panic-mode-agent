@@ -1,138 +1,302 @@
-# Panic-Mode: Autonomous Android Survival Agent
 
-Panic-Mode is an **agent-driven Android safety system** built for real-world failure conditions such as phone theft, loss, no internet, locked screens, or low battery.
+# 🛡️ Panic Mode — Hybrid Survival Agent for Android
 
-Unlike traditional safety apps, Panic-Mode uses **Droidrun agents** to bridge  **human intent → device-level automation → long-running autonomous behavior** .
-
----
-
-## 🚨 What Problem Does This Solve?
-
-Most phone safety solutions fail precisely when they are needed most:
-
-* Device is locked or unattended
-* Internet connectivity is unavailable
-* Battery is critically low
-* User cannot manually interact with the phone
-
-Existing apps rely on cloud services, continuous background processes, or user interaction, making them unreliable in real emergency or theft scenarios.
-
-Panic-Mode addresses this gap by introducing an **agent-driven system** that can:
-
-* Interpret user intent
-* Configure itself automatically
-* Continue operating autonomously at the device level
+> **An autonomous, agent-driven personal safety system**
+> 
+> Built with **Kotlin**, **Jetpack Compose**, **WorkManager**, **AlarmManager**, **Foreground Services**, and **Mobilerun AI**
 
 ---
 
-## 🧠 How It Works (High-Level)
+## 🚨 The Core Problem
 
-Panic-Mode operates in  **two distinct phases** :
+Most safety apps **fail when you need them most**.
 
-### 1️⃣ Unlocked Phase (Agent Configuration)
+They assume:
 
-A  **Droidrun agent** :
+- You are **conscious**
+    
+- You can **unlock your phone**
+    
+- You have **network connectivity**
+    
+- You can **interact with the UI**
+    
 
-* Interprets natural language commands
-* Navigates Android UI automatically
-* Configures:
-  * Trusted contact
-  * Activation SMS code
-  * Battery capacity
-  * Risk / situation context
+That assumption is **fatal**.
 
-This phase uses  **Droidrun UI automation + reasoning** .
+### Real failure scenarios
 
-### 2️⃣ Locked / Headless Phase (Autonomous Survival)
+- You collapse or lose consciousness while hiking
+    
+- You are under threat and cannot openly use your phone
+    
+- Your battery is critically low and drains before help arrives
+    
+- You lose data connectivity in a remote area
+    
 
-Once armed:
-
-* Foreground services + WorkManager take over
-* No UI interaction required
-* Operates even when:
-  * Screen is locked
-  * Internet is unavailable
-  * App is restarted or backgrounded
-
-Location updates and agent state are sent via  **SMS** , not cloud APIs.
-
----
-
-## 🤖 Droidrun Agent Code
-
-📂 **`droidrun-agent/`**
-
-* `run_with_fallback.py` – Primary Droidrun execution entrypoint with API-key fallback
-* `interpret_intent.py` – Intent-to-policy reasoning layer (natural language → device configuration)
-
-This is where Droidrun is actively used to:
-
-* Interpret human language
-* Generate structured automation goals
-* Execute Android actions reliably
+> **If the system waits for the user, the system is already broken.**
 
 ---
 
-## 📱 Android App (Headless Survival Engine)
+## 🧠 The Solution: An Agent That Acts _Instead_ of You
 
-📂 **`android-app/`**
+**Panic Mode inverts control.**
 
-Core components:
+Instead of reacting to user input, it runs as an **autonomous survival agent** that:
 
-* **Foreground Service** – Persistent execution
-* **WorkManager** – Periodic & adaptive location updates
-* **Policy Engine** – Battery-aware, intent-aware decision logic
-* **SMS Receiver** – Authorized trigger detection
-* **SMS Sender** – Offline communication channel
-
-The Android app continues operating **without Droidrun** once configured, demonstrating a real transition from agent-driven setup → autonomous execution.
-
----
-
-## 🎥 Demo Video
-
-👉 https://youtu.be/vhTvIm0TIGI
-
-Demo shows:
-
-1. Natural language command
-2. Droidrun agent configuring the app
-3. SMS trigger activation
-4. Foreground notification + location SMS
+- Operates **without UI**
+    
+- Works **offline**
+    
+- Survives **Doze, idle, and background limits**
+    
+- Escalates **without confirmation** when required
+    
 
 ---
 
-## 🧪 Why This Matters for Droidrun
+## 🏗️ System Architecture Overview
 
-This project demonstrates that  **Droidrun agents are not limited to UI scripting** .
-
-They can be used as:
-
-* Intent interpreters
-* Device policy generators
-* Entry points into long-running autonomous systems
-
-Panic-Mode showcases how Droidrun can power  **safety-critical, real-world Android automation** .
-
----
-
-## 🧾 Repository Structure
-
-```text
-panic-mode-agent/
-├── droidrun-agent/
-│   ├── run_with_fallback.py
-│   ├── interpret_intent.py
-│   └── README.md
-│
-├── android-app/
-│   └── app/src/main/java/com/panicmode/
-│       ├── LocationWorker.kt
-│       ├── PanicService.kt
-│       ├── PolicyManager.kt
-│       ├── SmsReceiver.kt
-│       └── SmsSender.kt
-│
-└── README.md
+```
+                    ┌─────────────────────────┐
+                    │   CLOUD INTELLIGENCE    │
+                    │  (Mobilerun AI Agent)   │
+                    │  Natural Language Setup │
+                    └───────────▲─────────────┘
+                                │
+                                │ Agent Configuration
+                                │
+┌───────────────────────────────┴───────────────────────────────┐
+│                    ON-DEVICE AUTONOMY                         │
+│                                                               │
+│  ┌──────────────────┐     ┌──────────────────┐                │
+│  │  SAFETY CHECK    │◀──▶│  PANIC AGENT     │                │
+│  │  SYSTEM (DMS)    │     │  (Core Brain)    │                │
+│  └──────────────────┘     └──────────────────┘                │
+│            │                          │                       │
+│            ▼                          ▼                       │
+│     Escalation SMS             Location Heartbeats            │
+│     Timeout Alarms             Battery-Aware Policies         │
+└───────────────────────────────────────────────────────────────┘
 ```
 
+---
+
+## 🧩 The 3-Layer Intelligence Model
+
+---
+
+## ☁️ Layer 1 — Cloud Intelligence (Mobilerun)
+
+### Purpose: **Zero-Friction Setup**
+
+Configuring safety systems manually is slow, error-prone, and stressful — exactly when users don’t have time.
+
+### What this layer does
+
+- Accepts **natural-language instructions**
+    
+- Converts them into **deterministic UI automation**
+    
+- Configures the app _for the user_
+    
+
+### Example
+
+> “I’m hiking for 4 hours, enable panic mode for my mom with safety checks.”
+
+### What happens internally
+
+```
+User Text
+   ↓
+CommandParser
+   ↓
+ParsedCommand(intent, contact, duration, DMS)
+   ↓
+MobilerunTaskBuilder
+   ↓
+Step-by-Step UI Automation
+```
+
+📌 **Important:**  
+This layer is **setup-only**.  
+Once configured, the system **does not depend on the cloud**.
+
+---
+
+## 🟡 Layer 2 — Safety Check System (Dead Man’s Switch)
+
+### Purpose: **Act when the user cannot**
+
+This layer assumes the **worst case**:  
+the user is unconscious, immobilized, or unable to respond.
+
+### How it works
+
+```
+[Scheduled Timer]
+     ↓
+Safety Check Notification
+     ↓
+User Confirms?
+     ├── YES → Reset cycle
+     └── NO  → Escalation
+```
+
+### Escalation Behavior
+
+If the user does **not** respond:
+
+- Increment missed count
+    
+- Fetch best-effort location
+    
+- Send escalation SMS with:
+    
+    - Location (if available)
+        
+    - Battery status
+        
+    - Instructions for remote control
+        
+
+```
+⚠️ User missed safety checks
+Try contacting them.
+📍 Location: Google Maps link
+🔋 Battery: 23%
+
+Send:
+TRIGGER → activate live tracking
+TRIGGER-STOP → pause tracking
+```
+
+📌 This system:
+
+- Survives app restarts
+    
+- Recovers from device idle
+    
+- Uses **exact alarms + foreground keepalive**
+    
+- Never double-fires or ghosts
+    
+
+---
+
+## 🔴 Layer 3 — Autonomous Panic Agent (Core Brain)
+
+### Purpose: **Survive when everything else degrades**
+
+This is the **always-on intelligence** that manages:
+
+- Power
+    
+- Frequency
+    
+- Location quality
+    
+- Communication reliability
+    
+
+---
+
+### Agent Decision Flow
+
+```
+Panic Activated
+     ↓
+Read User Intent + Battery State
+     ↓
+Policy Engine
+     ├── High Battery → VISIBILITY (15 min)
+     ├── Medium Battery → ADAPTIVE
+     └── Low Battery (<15%) → SURVIVAL (60 min)
+     ↓
+Schedule Heartbeats
+     ↓
+Send SMS Updates
+```
+
+---
+
+### Battery-Aware Survival Logic
+
+```
+Battery Level
+     │
+     ├─ >30% → High-frequency updates
+     ├─ 15–30% → Reduced frequency
+     └─ <15% → Survival Mode
+                    ↓
+              Minimum updates
+              Maximum uptime
+```
+
+📌 The goal is **not accuracy**.  
+The goal is **staying alive long enough to be found**.
+
+---
+
+## 🧠 Confidence Scoring (Diagnostics, Not Control)
+
+Each heartbeat computes a **confidence score** to explain _how reliable_ the current update is.
+
+Inputs:
+
+- Location availability
+    
+- Live vs cached fix
+    
+- Battery health
+    
+- Cold start detection
+    
+
+```
+Confidence = 100
+  -30 if no location
+  -15 if cached only
+  -20 if battery critical
+  -10 if cold start
+```
+
+Used only for:
+
+- Logs
+    
+- Debugging
+    
+- Demo transparency
+    
+
+🚫 **Never used for decisions**
+
+---
+
+## 🧾 Why This Is an Agent (Not Just an App)
+
+|Traditional App|Panic Mode Agent|
+|---|---|
+|User-driven|Agent-driven|
+|UI dependent|UI optional|
+|Internet-first|Offline-first|
+|Passive|Proactive|
+|One-shot|Continuous|
+
+---
+
+## 🧠 Design Philosophy
+
+> “A safety system must assume the user will fail — and still work.”
+
+- No silent failures
+    
+- No blocking calls in critical paths
+    
+- No dependency on a single signal
+    
+- Graceful degradation over hard crashes
+    
