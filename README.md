@@ -1,9 +1,27 @@
-
 # 🛡️ Panic Mode — Hybrid Autonomous Survival Agent
 
-> **An autonomous, agent-driven personal safety system**
-> 
+**TL;DR — System Overview**
+
+- Setup is cloud-assisted, execution is fully local
+    
+- The agent escalates without consent only when safety conditions are violated
+    
+- Offline recovery works even with zero internet connectivity
+    
+
+> **An autonomous, agent-driven personal safety system**  
 > Built with **Kotlin**, **Jetpack Compose**, **WorkManager**, **AlarmManager**, **Foreground Services**, and **Mobilerun AI**
+
+---
+
+### 🌟 Core Capabilities
+
+- **Find Offline Lost Devices:** Locate your phone without internet using SMS telemetry
+    
+- **Autonomous Protection:** The agent acts on its own when you are incapacitated or alone
+    
+- **Mobilerun Execution Layer:** Configure safety policies using simple natural-language commands
+    
 
 ---
 
@@ -56,29 +74,47 @@ Instead of reacting to user input, it runs as an **autonomous survival agent** t
 
 ---
 
+## 🧭 Agent Authority Model
+
+Panic Mode operates under a strict authority contract:
+
+- The **user defines intent once**
+    
+- The **agent executes autonomously**
+    
+- The **agent escalates only when explicit safety conditions are met**
+    
+- The **agent never waits for confirmation in incapacitation scenarios**
+    
+
+This ensures the system is proactive without being unpredictable.
+
+---
+
 ## 🏗️ System Architecture Overview
 
 ```
-                    ┌─────────────────────────┐
-                    │   CLOUD INTELLIGENCE    │
-                    │  (Mobilerun AI Agent)   │
-                    │  Natural Language Setup │
-                    └───────────▲─────────────┘
-                                │
-                                │ Agent Configuration
-                                │
-┌───────────────────────────────┴───────────────────────────────┐
-│                    ON-DEVICE AUTONOMY                         │
-│                                                               │
-│  ┌──────────────────┐     ┌──────────────────┐                │
-│  │  SAFETY CHECK    │◀──▶│  PANIC AGENT     │                │
-│  │  SYSTEM (DMS)    │     │  (Core Brain)    │                │
-│  └──────────────────┘     └──────────────────┘                │
-│            │                          │                       │
-│            ▼                          ▼                       │
-│     Escalation SMS             Location Heartbeats            │
-│     Timeout Alarms             Battery-Aware Policies         │
-└───────────────────────────────────────────────────────────────┘
+        ┌────────────────────────────┐
+        │        USER INTENT         │
+        │   (One-time definition)   │
+        └─────────────┬─────────────┘
+                      │
+        ┌─────────────▼─────────────┐
+        │  LAYER 1: EXECUTION LAYER │
+        │  Mobilerun (Setup Only)   │
+        └─────────────┬─────────────┘
+                      │  Policy Locked
+──────────────────────┼──────────────────────
+                      │  (Offline Authority)
+        ┌─────────────▼─────────────┐
+        │  LAYER 2: AUTONOMOUS CORE │
+        │  Safety Checks + Escalate│
+        └─────────────┬─────────────┘
+                      │
+        ┌─────────────▼─────────────┐
+        │  LAYER 3: SURVIVAL        │
+        │  INSTINCT (Recovery)     │
+        └──────────────────────────┘
 ```
 
 ---
@@ -123,6 +159,8 @@ Step-by-Step UI Automation
 📌 **Important:**  
 This layer is **setup-only**.  
 Once configured, the system **does not depend on the cloud**.
+
+**Mobilerun is used strictly for policy generation and UI execution during setup — it never controls runtime safety decisions.**
 
 ---
 
@@ -186,20 +224,25 @@ TRIGGER-STOP → pause tracking
 
 ---
 
-## 🔴 Layer 3 — Autonomous Panic Agent (Core Brain)
+## 🔴 Layer 3 — Survival Instinct (Phone Recovery Agent)
 
-### Purpose: **Survive when everything else degrades**
+### Purpose: **Be found when the grid fails**
 
-This is the **always-on intelligence** that manages:
+The **Survival Instinct** is the phone’s last-resort intelligence.  
+It activates when data networks are unavailable, the device is lost, or the user cannot intervene.
 
-- Power
+This layer focuses on **physical recovery** and **maximum uptime**, not convenience.
+
+### Offline Recovery Mechanisms
+
+- **SMS Telemetry Tunneling**  
+    The agent listens for a trusted SMS trigger and replies with GPS coordinates using the GSM layer, bypassing mobile data entirely.
     
-- Frequency
+- **Acoustic Beaconing**  
+    When stationary or battery-critical, the device emits intermittent high-frequency chirps to enable last-meter recovery in terrain like forests, rubble, or tall grass.
     
-- Location quality
-    
-- Communication reliability
-    
+
+**In practice, this allows a searcher to stand in a remote area, send a single SMS, and physically recover the device even when all network services are unavailable.**
 
 ---
 
@@ -236,24 +279,13 @@ Battery Level
 ```
 
 📌 The goal is **not accuracy**.  
-The goal is **staying alive long enough to be found**.
+📌 The goal is **staying alive long enough to be found**.
 
 ---
 
 ## 🧠 Confidence Scoring (Diagnostics, Not Control)
 
-Each heartbeat computes a **confidence score** to explain _how reliable_ the current update is.
-
-Inputs:
-
-- Location availability
-    
-- Live vs cached fix
-    
-- Battery health
-    
-- Cold start detection
-    
+Each heartbeat computes a **confidence score** to explain how reliable the update is.
 
 ```
 Confidence = 100
@@ -290,7 +322,7 @@ Used only for:
 
 ## 🧠 Design Philosophy
 
-> “A safety system must assume the user will fail — and still work.”
+> **“A safety system must assume the user will fail — and still work.”**
 
 - No silent failures
     
@@ -299,5 +331,6 @@ Used only for:
 - No dependency on a single signal
     
 - Graceful degradation over hard crashes
-
     
+
+---
