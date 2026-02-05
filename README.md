@@ -12,7 +12,7 @@
     
 - **Autonomous Protection:** The agent acts on its own when you are incapacitated or alone
     
-- **Mobilerun Execution Layer:** Configure safety policies using simple natural-language commands
+- **Mobilerun Execution Layer:** Mobilerun AI writes and updates the phone’s survival policy from natural-language commands
     
 
 ---
@@ -92,8 +92,8 @@ This ensures the system is proactive without being unpredictable.
         └─────────────┬─────────────┘
                       │
         ┌─────────────▼─────────────┐
-        │  LAYER 1: EXECUTION LAYER │
-        │      Mobilerun (Cloud)    │
+        │ LAYER 1: AI POLICY AUTHOR │
+        │      Mobilerun Cloud      │
         └─────────────┬─────────────┘
                       │  Policy Locked
 ──────────────────────┼──────────────────────
@@ -326,6 +326,7 @@ Used only for:
     
 
 ---
+
 
 
 
