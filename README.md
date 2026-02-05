@@ -101,7 +101,7 @@ This ensures the system is proactive without being unpredictable.
                       │
         ┌─────────────▼─────────────┐
         │  LAYER 1: EXECUTION LAYER │
-        │  Mobilerun (Setup Only)   │
+        │  Mobilerun (Setup)        │
         └─────────────┬─────────────┘
                       │  Policy Locked
 ──────────────────────┼──────────────────────
@@ -160,7 +160,7 @@ Step-by-Step UI Automation
 This layer is **setup-only**.  
 Once configured, the system **does not depend on the cloud**.
 
-**Mobilerun is used strictly for policy generation and UI execution during setup — it never controls runtime safety decisions.**
+**Mobilerun is used for policy generation and UI execution during setup.**
 
 ---
 
@@ -334,4 +334,5 @@ Used only for:
     
 
 ---
+
 
