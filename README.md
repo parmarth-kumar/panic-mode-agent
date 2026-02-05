@@ -228,10 +228,7 @@ This layer focuses on **physical recovery** and **maximum uptime**, not convenie
 
 - **SMS Telemetry Tunneling**  
     The agent listens for a trusted SMS trigger and replies with GPS coordinates using the GSM layer, bypassing mobile data entirely.
-    
-- **Acoustic Beaconing**  
-    When stationary or battery-critical, the device emits intermittent high-frequency chirps to enable last-meter recovery in terrain like forests, rubble, or tall grass.
-    
+  
 
 **In practice, this allows a searcher to stand in a remote area, send a single SMS, and physically recover the device even when all network services are unavailable.**
 
@@ -326,6 +323,7 @@ Used only for:
     
 
 ---
+
 
 
 
