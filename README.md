@@ -1,15 +1,7 @@
 # 🛡️ Panic Mode — Hybrid Autonomous Survival Agent
 
-**TL;DR — System Overview**
-
-- Setup is cloud-assisted, execution is fully local
-    
-- The agent escalates without consent only when safety conditions are violated
-    
-- Offline recovery works even with zero internet connectivity
-    
-
-> **An autonomous, agent-driven personal safety system**  
+> **An autonomous, agent-driven personal safety system.**  
+> **Mobilerun AI prepares your phone for emergencies you cannot predict.**  
 > Built with **Kotlin**, **Jetpack Compose**, **WorkManager**, **AlarmManager**, **Foreground Services**, and **Mobilerun AI**
 
 ---
@@ -101,7 +93,7 @@ This ensures the system is proactive without being unpredictable.
                       │
         ┌─────────────▼─────────────┐
         │  LAYER 1: EXECUTION LAYER │
-        │  Mobilerun (Setup)        │
+        │      Mobilerun (Cloud)    │
         └─────────────┬─────────────┘
                       │  Policy Locked
 ──────────────────────┼──────────────────────
@@ -125,7 +117,7 @@ This ensures the system is proactive without being unpredictable.
 
 ## ☁️ Layer 1 — Cloud Intelligence (Mobilerun)
 
-### Purpose: **Zero-Friction Setup**
+### Purpose: **Writes policy for survival behavior of the phone**
 
 Configuring safety systems manually is slow, error-prone, and stressful — exactly when users don’t have time.
 
@@ -135,7 +127,7 @@ Configuring safety systems manually is slow, error-prone, and stressful — exac
     
 - Converts them into **deterministic UI automation**
     
-- Configures the app _for the user_
+- Programs the app _for the user_
     
 
 ### Example
@@ -156,11 +148,10 @@ MobilerunTaskBuilder
 Step-by-Step UI Automation
 ```
 
-📌 **Important:**  
-This layer is **setup-only**.  
+📌 **Important:**   
 Once configured, the system **does not depend on the cloud**.
 
-**Mobilerun is used for policy generation and UI execution during setup.**
+**Mobilerun is used for policy generation and UI execution.**
 
 ---
 
@@ -308,7 +299,7 @@ Used only for:
 
 ---
 
-## 🧾 Why This Is an Agent (Not Just an App)
+## 🧾 Why This Is an AI Agent Powered by Mobilerun
 
 |Traditional App|Panic Mode Agent|
 |---|---|
@@ -322,7 +313,8 @@ Used only for:
 
 ## 🧠 Design Philosophy
 
-> **“A safety system must assume the user will fail — and still work.”**
+> **“A safety system must assume the user will fail — and still work.”**  
+> **The safety policy running on the device is authored by Mobilerun AI from user intent.**
 
 - No silent failures
     
@@ -334,5 +326,6 @@ Used only for:
     
 
 ---
+
 
 
